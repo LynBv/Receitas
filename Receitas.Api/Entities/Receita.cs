@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Receitas.Api.Enums;
 
 namespace Receitas.Api.Entities
@@ -6,9 +7,9 @@ namespace Receitas.Api.Entities
 	{
 		public int Id { get; set; }
 		public required string Nome { get; set; }
-		public required ICollection<string> Instrucoes { get; set; }
+		public required List<string> Instrucoes { get; set; }
 		public required ECategoria Categoria { get; set; }
-		public required ICollection<IngredienteNescessario> Ingredientes { get; set; }
+		public required List<ReceitaIngrediente> Ingredientes { get; set; }
 		public string? Descricao { get; set; }
 		public string? Dica { get; set; }
 		public int? Porcoes { get; set; }

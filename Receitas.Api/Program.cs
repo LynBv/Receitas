@@ -1,4 +1,7 @@
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Writers;
 using Receitas.Api.Context;
 
 internal class Program
@@ -7,6 +10,12 @@ internal class Program
 	{
 		var builder = WebApplication.CreateBuilder(args);
 		
+		builder.Services.Configure<JsonOptions>(
+			option => option.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+			
+		builder.Services.AddControllers()
+			.AddJsonOptions(option => option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+			
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddDbContext<ReceitasContext>(option => 
 		{
@@ -27,6 +36,15 @@ internal class Program
 		}
 
 		app.UseHttpsRedirection();
+		app.MapControllers();
+		
+		
+		using (var scope = app.Services.CreateScope())
+		{
+			var context = scope.ServiceProvider.GetRequiredService<ReceitasContext>();
+			context.Database.Migrate();
+		}
+		
 
 		app.Run();
 	}

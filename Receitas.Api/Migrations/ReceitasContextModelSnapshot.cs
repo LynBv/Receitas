@@ -31,33 +31,6 @@ namespace Receitas.Api.Migrations
                     b.ToTable("Ingredientes");
                 });
 
-            modelBuilder.Entity("Receitas.Api.Entities.IngredienteNescessario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("IngredienteId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double>("Quantidade")
-                        .HasColumnType("REAL");
-
-                    b.Property<int?>("ReceitaId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UnidadeDeMedida")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IngredienteId");
-
-                    b.HasIndex("ReceitaId");
-
-                    b.ToTable("IngredienteNescessarios");
-                });
-
             modelBuilder.Entity("Receitas.Api.Entities.Receita", b =>
                 {
                     b.Property<int>("Id")
@@ -92,7 +65,34 @@ namespace Receitas.Api.Migrations
                     b.ToTable("Receitas");
                 });
 
-            modelBuilder.Entity("Receitas.Api.Entities.IngredienteNescessario", b =>
+            modelBuilder.Entity("Receitas.Api.Entities.ReceitaIngrediente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IngredienteId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Quantidade")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("ReceitaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UnidadeDeMedida")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IngredienteId");
+
+                    b.HasIndex("ReceitaId");
+
+                    b.ToTable("ReceitaIngrediente");
+                });
+
+            modelBuilder.Entity("Receitas.Api.Entities.ReceitaIngrediente", b =>
                 {
                     b.HasOne("Receitas.Api.Entities.Ingrediente", "Ingrediente")
                         .WithMany()
@@ -102,7 +102,9 @@ namespace Receitas.Api.Migrations
 
                     b.HasOne("Receitas.Api.Entities.Receita", null)
                         .WithMany("Ingredientes")
-                        .HasForeignKey("ReceitaId");
+                        .HasForeignKey("ReceitaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Ingrediente");
                 });

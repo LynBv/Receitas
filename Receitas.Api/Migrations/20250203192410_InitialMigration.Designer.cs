@@ -10,8 +10,8 @@ using Receitas.Api.Context;
 namespace Receitas.Api.Migrations
 {
     [DbContext(typeof(ReceitasContext))]
-    [Migration("20250131202834_InitalMigration")]
-    partial class InitalMigration
+    [Migration("20250203192410_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,33 +32,6 @@ namespace Receitas.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ingredientes");
-                });
-
-            modelBuilder.Entity("Receitas.Api.Entities.IngredienteNescessario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("IngredienteId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double>("Quantidade")
-                        .HasColumnType("REAL");
-
-                    b.Property<int?>("ReceitaId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UnidadeDeMedida")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IngredienteId");
-
-                    b.HasIndex("ReceitaId");
-
-                    b.ToTable("IngredienteNescessarios");
                 });
 
             modelBuilder.Entity("Receitas.Api.Entities.Receita", b =>
@@ -95,7 +68,34 @@ namespace Receitas.Api.Migrations
                     b.ToTable("Receitas");
                 });
 
-            modelBuilder.Entity("Receitas.Api.Entities.IngredienteNescessario", b =>
+            modelBuilder.Entity("Receitas.Api.Entities.ReceitaIngrediente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IngredienteId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Quantidade")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("ReceitaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UnidadeDeMedida")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IngredienteId");
+
+                    b.HasIndex("ReceitaId");
+
+                    b.ToTable("ReceitaIngrediente");
+                });
+
+            modelBuilder.Entity("Receitas.Api.Entities.ReceitaIngrediente", b =>
                 {
                     b.HasOne("Receitas.Api.Entities.Ingrediente", "Ingrediente")
                         .WithMany()
@@ -105,7 +105,9 @@ namespace Receitas.Api.Migrations
 
                     b.HasOne("Receitas.Api.Entities.Receita", null)
                         .WithMany("Ingredientes")
-                        .HasForeignKey("ReceitaId");
+                        .HasForeignKey("ReceitaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Ingrediente");
                 });
