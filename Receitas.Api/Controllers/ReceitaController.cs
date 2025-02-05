@@ -21,6 +21,7 @@ public class ReceitaController : ControllerBase
 	{
 		List<Receita> receitas = _receitasContext.Receitas
 			//.Include("Ingredientes.Ingrediente")
+			.AsNoTracking()
 			.Include(r => r.Ingredientes)
 			.ThenInclude(i => i.Ingrediente)
 			.ToList();
@@ -32,9 +33,10 @@ public class ReceitaController : ControllerBase
 	public Results<NotFound, Ok<Receita>> GetReceitaPorId(int id)
 	{
 		Receita? receita = _receitasContext.Receitas
-		.Include(r => r.Ingredientes)
-		.ThenInclude(i => i.Ingrediente)
-		.FirstOrDefault(r => r.Id == id);
+			.AsNoTracking()
+			.Include(r => r.Ingredientes)
+			.ThenInclude(i => i.Ingrediente)
+			.FirstOrDefault(r => r.Id == id);
 		
 		if(receita == null){
 			return TypedResults.NotFound();

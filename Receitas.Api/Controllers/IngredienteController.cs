@@ -1,6 +1,7 @@
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Receitas.Api.Context;
 using Receitas.Api.Entities;
 
@@ -21,7 +22,9 @@ public class IngredienteController : ControllerBase
 	[HttpGet("")]
 	public List<Ingrediente> GetIngredientes()
 	{
-		List<Ingrediente> ingredientes = _receitasContext.Ingredientes.ToList();
+		List<Ingrediente> ingredientes = _receitasContext.Ingredientes
+			.AsNoTracking()
+			.ToList();
 		
 		return ingredientes;
 	}
@@ -29,7 +32,9 @@ public class IngredienteController : ControllerBase
 	[HttpGet("{id}")]
 	public Results<NotFound, Ok<Ingrediente>> GetIngrediente(int id)
 	{
-		Ingrediente? ingrediente = _receitasContext.Ingredientes.FirstOrDefault(i => i.Id == id);
+		Ingrediente? ingrediente = _receitasContext.Ingredientes
+			.AsNoTracking()
+			.FirstOrDefault(i => i.Id == id);
 		
 		return ingrediente == null 
 			? TypedResults.NotFound()
