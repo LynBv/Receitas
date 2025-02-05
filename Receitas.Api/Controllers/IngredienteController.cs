@@ -58,7 +58,6 @@ public class IngredienteController : ControllerBase
 		? return TypedResults.NotFound()
 		: _receitasContext.Ingredientes.Remove(ingrediente); */
 		
-		
 		if(ingrediente == null){
 			return TypedResults.NotFound();
 		}

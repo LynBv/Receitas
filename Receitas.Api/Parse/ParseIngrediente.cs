@@ -6,13 +6,7 @@ namespace Receitas.Api.Services.Parse;
 
 public class ParseIngrediente
 {
-	private ReceitasContext _receitasContext;
-
-	public ParseIngrediente(ReceitasContext receitasContext)
-	{
-		_receitasContext = receitasContext;
-	}
-
+	
 	public Ingrediente ParseIngredienteDto(IngredienteDTO ingredienteDTO)
 	{
 		var ingrediente = new Ingrediente()
@@ -22,5 +16,4 @@ public class ParseIngrediente
 		return ingrediente;
 	}
 
-	
 }

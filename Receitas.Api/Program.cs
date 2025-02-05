@@ -17,6 +17,7 @@ internal class Program
 			.AddJsonOptions(option => option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 			
 		builder.Services.AddEndpointsApiExplorer();
+		
 		builder.Services.AddDbContext<ReceitasContext>(option => 
 		{
 			string connString = builder.Configuration.GetConnectionString("sqLite")
