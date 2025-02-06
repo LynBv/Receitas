@@ -1,3 +1,4 @@
+using System.Linq;
 using Receitas.Api.Context;
 using Receitas.Api.DTO;
 using Receitas.Api.Entities;
@@ -15,31 +16,31 @@ public class ParseReceita
 	public Receita ParseReceitaDto(ReceitaDTO receitaDTO)
 	{
 		Receita receita = new();
-		ParseReceitaDto(receitaDTO, ref receita);
+		ParseReceitaDto(receitaDTO, receita);
 		return receita;
 	}
-	
-	public void ParseReceitaDto(ReceitaDTO receitaDTO, ref Receita receita)
+
+	public void ParseReceitaDto(ReceitaDTO receitaDTO, Receita receita)
 	{
 		receita.Nome = receitaDTO.Nome;
 		receita.Categoria = receitaDTO.Categoria;
 		receita.Instrucoes = receitaDTO.Instrucoes;
 		receita.Porcoes = receitaDTO.Porcoes;
-		
-		/* receita.Ingredientes.RemoveAll(x => x.Id == "a") */
-		
+
 		// O que ja existe em receita e nao existe no DTO, precisa ser apagado.
-		
-		
+		receita.Ingredientes.RemoveAll(i => !receitaDTO.Ingredientes.Any(iDTO => iDTO.ID == i.Id)); ;
+
 		// O que existe no DTO mas nao existe na receita, precisa ser adicionado.
-		
-		
+
+		var ingredientesAdicionados = receitaDTO.Ingredientes
+			.Where(iDTO => !receita.Ingredientes.Any(i => i.Id == iDTO.ID))
+			.Select(dto => _parseReceitaIngrediente.ParseReceitaIngredienteDTO(dto));
+			
+		receita.Ingredientes.AddRange(ingredientesAdicionados);
+
 		// O que existe tanto no DTO quanto na receita, precisa ser atualizado.
-		
-		
-		
-		var ingredientesParsed = receitaDTO.Ingredientes
-			.Select(dto => _parseReceitaIngrediente.ParseReceitaIngredienteDTO(dto))
-			.ToList();
+		var ingredientesAtualizados = receita.Ingredientes
+			.Where(i => receitaDTO.Ingredientes.Any(iDTO => iDTO.ID == i.Id));
+
 	}
 }

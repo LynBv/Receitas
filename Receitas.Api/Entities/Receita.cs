@@ -13,7 +13,6 @@ namespace Receitas.Api.Entities
 		public string? Dica { get; set; }
 		public int? Porcoes { get; set; }
 		public int? TempoDePreparoMinutos { get; set; }
-		
 		public List<ReceitaIngrediente> Ingredientes { get; set; } = [];
 	}
 }
