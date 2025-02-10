@@ -7,7 +7,7 @@ public record ReceitaDTO(
 	string Nome, 
 	List<string> Instrucoes, 
 	ECategoria Categoria, 
-	List<ReceitaIngredienteDTO> Ingredientes, 
+	List<ReceitaIngredienteDTO> ReceitaIngredientes, 
 	string Descricao, 
 	string? Dica, 
 	int? Porcoes, 

@@ -22,7 +22,7 @@ public class ReceitaController : ControllerBase
 		List<Receita> receitas = _receitasContext.Receitas
 			//.Include("Ingredientes.Ingrediente")
 			.AsNoTracking()
-			.Include(r => r.Ingredientes)
+			.Include(r => r.ReceitaIngredientes)
 			.ThenInclude(i => i.Ingrediente)
 			.ToList();
 		
@@ -34,7 +34,7 @@ public class ReceitaController : ControllerBase
 	{
 		Receita? receita = _receitasContext.Receitas
 			.AsNoTracking()
-			.Include(r => r.Ingredientes)
+			.Include(r => r.ReceitaIngredientes)
 			.ThenInclude(i => i.Ingrediente)
 			.FirstOrDefault(r => r.Id == id);
 		

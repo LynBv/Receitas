@@ -12,7 +12,7 @@ public class ReceitasContext(DbContextOptions options) : DbContext(options)
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		modelBuilder.Entity<Receita>()
-			.HasMany(r => r.Ingredientes)
+			.HasMany(r => r.ReceitaIngredientes)
 			.WithOne()
 			.IsRequired();
 			
