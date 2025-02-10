@@ -25,10 +25,4 @@ public class IngredienteService
 		return ingrediente;
 	}
 	
-	/* public Ingrediente Atualizar(IngredienteDTO ingredienteDTO, int id){
-
-		var ingrediente = _contex.Ingredientes.FirstOrDefault(i => i.Id == id);
-		
-		
-	} */
 }
