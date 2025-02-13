@@ -1,6 +1,7 @@
 using Receitas.Api.Context;
 using Receitas.Api.DTO;
 using Receitas.Api.Entities;
+using Receitas.Api.Exceptions;
 using Receitas.Api.Services.Parse;
 
 namespace Receitas.Api.Services;
@@ -24,18 +25,13 @@ public class ReceitaService
 		return receita;
 	}
 	
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="receitaDTO"></param>
-	/// <param name="id"></param>
 	public Receita Atualizar( ReceitaDTO receitaDTO, int id)
 	{
 		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == id);
 	  
 	  	if (receita == null)
 		{
-			throw new Exception();
+			throw new IdentificadorInvalidoException("não foi encontrada receita com este identificador");
 		}
 	  
 	  	_parseReceita.ParseReceitaDto(receitaDTO, receita);
