@@ -2,12 +2,12 @@ using Receitas.Api.Enums;
 
 namespace Receitas.Api.DTO;
 
-public record ReceitaDTO(
+public record ResponseReceitaDTO(
 	int Id, 
 	string Nome, 
 	List<string> Instrucoes, 
 	ECategoria Categoria, 
-	List<ReceitaIngredienteDTO> ReceitaIngredientes, 
+	List<RequestReceitaIngredienteDTO> ReceitaIngredientes, 
 	string Descricao, 
 	string? Dica, 
 	int? Porcoes, 

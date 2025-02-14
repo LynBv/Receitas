@@ -10,34 +10,50 @@ public class ReceitaService
 {
 	private ReceitasContext _context;
 	private ParseReceita _parseReceita;
-	
-	public ReceitaService(ReceitasContext context, ParseReceita parseReceita){
+
+	public ReceitaService(ReceitasContext context, ParseReceita parseReceita)
+	{
 		_context = context;
 		_parseReceita = parseReceita;
 	}
-	
-	public Receita Inserir(ReceitaDTO receitaDTO)
+
+	public Receita Inserir(RequestReceitaDTO receitaDTO)
 	{
-		var receita = _parseReceita.ParseReceitaDto(receitaDTO);
+		var receita = _parseReceita.ParseRequestReceitaDto(receitaDTO);
 		_context.Add(receita);
 		_context.SaveChanges();
-		
+
 		return receita;
 	}
-	
-	public Receita Atualizar( ReceitaDTO receitaDTO, int id)
+
+	public Receita Atualizar(RequestReceitaDTO receitaDTO, int id)
 	{
 		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == id);
-	  
-	  	if (receita == null)
+
+		if (receita == null)
 		{
-			throw new IdentificadorInvalidoException("não foi encontrada receita com este identificador");
+			throw new IdentificadorInvalidoException<Receita>();
 		}
-	  
-	  	_parseReceita.ParseReceitaDto(receitaDTO, receita);
-	  
-	  	_context.SaveChanges();
-	  
-	  	return receita;
+
+		_parseReceita.ParseRequestReceitaDto(receitaDTO, receita);
+
+		_context.SaveChanges();
+
+		return receita;
+	}
+
+	public void Excluir(int id)
+	{
+
+		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == id);
+		
+		if (receita == null)
+		{
+			throw new IdentificadorInvalidoException<Receita>();
+		}
+		
+		_context.Receitas.Remove(receita);
+		_context.SaveChanges();
+
 	}
 }

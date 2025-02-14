@@ -12,14 +12,14 @@ public class ParseReceita
 		_parseReceitaIngrediente = parseReceitaIngrediente;
 	}
 
-	public Receita ParseReceitaDto(ReceitaDTO receitaDTO)
+	public Receita ParseRequestReceitaDto(RequestReceitaDTO receitaDTO)
 	{
 		Receita receita = new();
-		ParseReceitaDto(receitaDTO, receita);
+		ParseRequestReceitaDto(receitaDTO, receita);
 		return receita;
 	}
 
-	public void ParseReceitaDto(ReceitaDTO receitaDTO, Receita receita)
+	public void ParseRequestReceitaDto(RequestReceitaDTO receitaDTO, Receita receita)
 	{
 		receita.Nome = receitaDTO.Nome;
 		receita.Categoria = receitaDTO.Categoria;
@@ -27,21 +27,21 @@ public class ParseReceita
 		receita.Porcoes = receitaDTO.Porcoes;
 
 		receita.ReceitaIngredientes.RemoveAll(
-			ri => !receitaDTO.ReceitaIngredientes.Any(riDTO => riDTO.ID == ri.Id));
+			ri => !receitaDTO.ReceitaIngredientes.Any(riDTO => riDTO.Id == ri.Id));
 
-		foreach (ReceitaIngredienteDTO receitaIngredienteDTO in receitaDTO.ReceitaIngredientes)
+		foreach (RequestReceitaIngredienteDTO receitaIngredienteDTO in receitaDTO.ReceitaIngredientes)
 		{
 			ReceitaIngrediente? receitaIngrediente = 
-				receita.ReceitaIngredientes.FirstOrDefault(ri => ri.Id == receitaIngredienteDTO.ID);
+				receita.ReceitaIngredientes.FirstOrDefault(ri => ri.Id == receitaIngredienteDTO.Id);
 
 			if (receitaIngrediente == null)
 			{
-				receitaIngrediente = _parseReceitaIngrediente.ParseReceitaIngredienteDTO(receitaIngredienteDTO);
+				receitaIngrediente = _parseReceitaIngrediente.ParseRequestReceitaIngredienteDTO(receitaIngredienteDTO);
 				receita.ReceitaIngredientes.Add(receitaIngrediente);
 			}
 			else
 			{
-				_parseReceitaIngrediente.ParseReceitaIngredienteDTO(receitaIngredienteDTO, receitaIngrediente);
+				_parseReceitaIngrediente.ParseRequestReceitaIngredienteDTO(receitaIngredienteDTO, receitaIngrediente);
 			}
 		}
 	}

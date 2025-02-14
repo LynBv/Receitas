@@ -11,16 +11,17 @@ public class ParseReceitaIngrediente
 		_parseIngrediente = parseIngrediente;
 	}
 
-	public ReceitaIngrediente ParseReceitaIngredienteDTO(ReceitaIngredienteDTO receitaIngredienteDTO)
+	public ReceitaIngrediente ParseRequestReceitaIngredienteDTO(RequestReceitaIngredienteDTO receitaIngredienteDTO)
 	{
 		ReceitaIngrediente receitaIngrediente = new();
-		ParseReceitaIngredienteDTO(receitaIngredienteDTO, receitaIngrediente);
+		ParseRequestReceitaIngredienteDTO(receitaIngredienteDTO, receitaIngrediente);
 		return receitaIngrediente;
 	}
 
-	public ReceitaIngrediente ParseReceitaIngredienteDTO(ReceitaIngredienteDTO receitaIngredienteDTO, ReceitaIngrediente receitaIngrediente)
+	public ReceitaIngrediente ParseRequestReceitaIngredienteDTO
+		(RequestReceitaIngredienteDTO receitaIngredienteDTO, ReceitaIngrediente receitaIngrediente)
 	{
-		var ReceitaIngredienteParsed = _parseIngrediente.ParseIngredienteDto(receitaIngredienteDTO.Ingrediente);
+		var ReceitaIngredienteParsed = _parseIngrediente.ParseRequestIngredienteDto(receitaIngredienteDTO.Ingrediente);
 
 		receitaIngrediente.Ingrediente = ReceitaIngredienteParsed;
 		receitaIngrediente.Quantidade = receitaIngredienteDTO.Quantidade;

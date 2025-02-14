@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Writers;
 using Receitas.Api.Context;
+using Receitas.Api.Middlewares;
 
 internal class Program
 {
@@ -37,6 +38,9 @@ internal class Program
 		}
 
 		app.UseHttpsRedirection();
+		
+		app.UseMiddleware<CustomExceptionHandlerMiddleware>();
+		
 		app.MapControllers();
 		
 		

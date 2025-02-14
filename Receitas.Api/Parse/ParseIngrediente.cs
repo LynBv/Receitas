@@ -5,13 +5,13 @@ namespace Receitas.Api.Services.Parse;
 
 public class ParseIngrediente
 {
-	public Ingrediente ParseIngredienteDto(IngredienteDTO ingredienteDTO)
+	public Ingrediente ParseRequestIngredienteDto(RequestIngredienteDTO ingredienteDTO)
 	{
 		var ingrediente = new Ingrediente();
-		ParseIngredienteDto(ingredienteDTO, ingrediente);
+		ParseRequestIngredienteDto(ingredienteDTO, ingrediente);
 		return ingrediente;
 	}
-	public Ingrediente ParseIngredienteDto(IngredienteDTO ingredienteDTO, Ingrediente ingrediente)
+	public Ingrediente ParseRequestIngredienteDto(RequestIngredienteDTO ingredienteDTO, Ingrediente ingrediente)
 	{
 		ingrediente.Nome = ingredienteDTO.Nome;
 		

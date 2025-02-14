@@ -1,6 +1,7 @@
 using Receitas.Api.Context;
 using Receitas.Api.DTO;
 using Receitas.Api.Entities;
+using Receitas.Api.Exceptions;
 using Receitas.Api.Services.Parse;
 
 namespace Receitas.Api.Services;
@@ -15,9 +16,9 @@ public class IngredienteService
 		_parseIngrediente = parseIngrediente;
 	}
 	
-	public Ingrediente Inserir(IngredienteDTO ingredienteDTO)
+	public Ingrediente Inserir(RequestIngredienteDTO ingredienteDTO)
 	{
-		var ingrediente = _parseIngrediente.ParseIngredienteDto(ingredienteDTO);
+		var ingrediente = _parseIngrediente.ParseRequestIngredienteDto(ingredienteDTO);
 		
 		_contex.Ingredientes.Add(ingrediente);
 		_contex.SaveChanges();
@@ -25,4 +26,36 @@ public class IngredienteService
 		return ingrediente;
 	}
 	
+	public Ingrediente Atualizar(RequestIngredienteDTO ingredienteDTO, int id)
+	{
+	
+		Ingrediente? ingrediente = _contex.Ingredientes.FirstOrDefault(i => i.Id == id);
+		
+		if(ingrediente == null)
+		{
+			throw new IdentificadorInvalidoException<Ingrediente>();
+		}
+		
+		var ingredienteNew = _parseIngrediente.ParseRequestIngredienteDto(ingredienteDTO, ingrediente);
+		
+		_contex.SaveChanges();
+		
+		return ingredienteNew;
+		
+	}
+	
+	public void Excluir(int id)
+	{
+		Ingrediente? ingrediente = _contex.Ingredientes.FirstOrDefault(i => i.Id == id);
+		
+		if(ingrediente == null)
+		{
+			throw new IdentificadorInvalidoException<Ingrediente>();
+		}
+		
+		_contex.Ingredientes.Remove(ingrediente);
+		
+		_contex.SaveChanges();
+
+	}
 }
