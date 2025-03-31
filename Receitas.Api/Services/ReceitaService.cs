@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Receitas.Api.Context;
 using Receitas.Api.DTO;
 using Receitas.Api.Entities;
@@ -9,17 +10,43 @@ namespace Receitas.Api.Services;
 public class ReceitaService
 {
 	private ReceitasContext _context;
-	private ParseReceita _parseReceita;
+	private ParseReceita _parse;
 
 	public ReceitaService(ReceitasContext context, ParseReceita parseReceita)
 	{
 		_context = context;
-		_parseReceita = parseReceita;
+		_parse = parseReceita;
+	}
+
+	public Receita BuscarPorId(int id)
+	{
+		Receita? receita = _context.Receitas
+				.AsNoTracking()
+				.Include(r => r.ReceitaIngredientes)
+				.ThenInclude(i => i.Ingrediente)
+				.FirstOrDefault(r => r.Id == id);
+				
+		if(receita == null)
+			throw new IdentificadorInvalidoException<Receita>();
+			
+				
+		return receita;
+	}
+	
+	public List<Receita> BuscarTodas()
+	{
+	    List<Receita> receitas = _context.Receitas
+			.AsNoTracking()
+			.Include(r => r.ReceitaIngredientes)
+			.ThenInclude(i => i.Ingrediente)
+			.ToList();
+		
+		return receitas;
 	}
 
 	public Receita Inserir(RequestReceitaDTO receitaDTO)
 	{
-		var receita = _parseReceita.ParseRequestReceitaDto(receitaDTO);
+		var receita = _parse.ParseRequestReceitaDto(receitaDTO);
 		_context.Add(receita);
 		_context.SaveChanges();
 
@@ -31,11 +58,9 @@ public class ReceitaService
 		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == id);
 
 		if (receita == null)
-		{
 			throw new IdentificadorInvalidoException<Receita>();
-		}
 
-		_parseReceita.ParseRequestReceitaDto(receitaDTO, receita);
+		_parse.ParseRequestReceitaDto(receitaDTO, receita);
 
 		_context.SaveChanges();
 
@@ -44,14 +69,11 @@ public class ReceitaService
 
 	public void Excluir(int id)
 	{
-
 		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == id);
-		
+
 		if (receita == null)
-		{
 			throw new IdentificadorInvalidoException<Receita>();
-		}
-		
+
 		_context.Receitas.Remove(receita);
 		_context.SaveChanges();
 

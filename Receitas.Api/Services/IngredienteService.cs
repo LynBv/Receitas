@@ -9,16 +9,16 @@ namespace Receitas.Api.Services;
 public class IngredienteService
 {
 	private ReceitasContext _contex;
-	private ParseIngrediente _parseIngrediente;
+	private ParseIngrediente _parse;
 	
 	public IngredienteService(ReceitasContext context, ParseIngrediente parseIngrediente){
 		_contex = context;
-		_parseIngrediente = parseIngrediente;
+		_parse = parseIngrediente;
 	}
 	
 	public Ingrediente Inserir(RequestIngredienteDTO ingredienteDTO)
 	{
-		var ingrediente = _parseIngrediente.ParseRequestIngredienteDto(ingredienteDTO);
+		var ingrediente = _parse.ParseRequestIngredienteDto(ingredienteDTO);
 		
 		_contex.Ingredientes.Add(ingrediente);
 		_contex.SaveChanges();
@@ -36,7 +36,7 @@ public class IngredienteService
 			throw new IdentificadorInvalidoException<Ingrediente>();
 		}
 		
-		var ingredienteNew = _parseIngrediente.ParseRequestIngredienteDto(ingredienteDTO, ingrediente);
+		var ingredienteNew = _parse.ParseRequestIngredienteDto(ingredienteDTO, ingrediente);
 		
 		_contex.SaveChanges();
 		

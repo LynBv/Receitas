@@ -1,82 +1,70 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Receitas.Api.Context;
+using Receitas.Api.DTO;
 using Receitas.Api.Entities;
+using Receitas.Api.Exceptions;
+using Receitas.Api.Services;
 
 namespace Receitas.Api.Controllers;
 
 [ApiController]
-[Route ("api/[controller]")]
+[Route("api/[controller]")]
 public class ReceitaController : ControllerBase
 {
-	private ReceitasContext _receitasContext;
-	public ReceitaController(ReceitasContext receitasContext)
+	private ReceitaService _service;
+	public ReceitaController(ReceitaService service)
 	{
-		_receitasContext = receitasContext;
+		_service = service;
 	}
-	
+
 	[HttpGet("")]
 	public List<Receita> GetReceitas()
 	{
-		List<Receita> receitas = _receitasContext.Receitas
-			//.Include("Ingredientes.Ingrediente")
-			.AsNoTracking()
-			.Include(r => r.ReceitaIngredientes)
-			.ThenInclude(i => i.Ingrediente)
-			.ToList();
-		
-		return receitas;
+		return _service.BuscarTodas();
 	}
-	
+
 	[HttpGet("{id}")]
 	public Results<NotFound, Ok<Receita>> GetReceitaPorId(int id)
 	{
-		Receita? receita = _receitasContext.Receitas
-			.AsNoTracking()
-			.Include(r => r.ReceitaIngredientes)
-			.ThenInclude(i => i.Ingrediente)
-			.FirstOrDefault(r => r.Id == id);
-		
-		if(receita == null){
+		try
+		{
+			var receita = _service.BuscarPorId(id);
+			return TypedResults.Ok(receita);
+		}
+		catch (IdentificadorInvalidoException)
+		{
 			return TypedResults.NotFound();
 		}
-		
-		return TypedResults.Ok(receita);
-		
 	}
-	
+
 	[HttpPost("")]
-	public Results<BadRequest, Ok<Receita>> PostReceita([FromBody] Receita receita)
+	public Results<BadRequest, Ok<Receita>> PostReceita([FromBody] RequestReceitaDTO receitaDTO)
 	{
-		_receitasContext.Add(receita);
-		_receitasContext.SaveChanges();
-		return TypedResults.Ok(receita);	
+		try
+		{
+			var receita = _service.Inserir(receitaDTO);
+			return TypedResults.Ok(receita);
+		}
+		catch (System.Exception)
+		{
+			return TypedResults.BadRequest();
+
+		}
 	}
-	
+
 	[HttpDelete("{id}")]
-	public Results<NoContent, NotFound> DeleteReceita(int id){
-		
-	/* 	int deletedRows = _receitaContext.Receitas
-			.Where(x => x.Id == id)
-			.ExecuteDelete();
-		
-		return deletedRows > 0
-			? TypedResults.Ok()
-			: TypedResults.NoContent(); */
-		
-		
-		Receita? receita =_receitasContext.Receitas.FirstOrDefault(r => r.Id == id);
-		
-		if(receita == null){
+	public Results<NoContent, NotFound> DeleteReceita(int id)
+	{
+		try
+		{
+			_service.Excluir(id);
+			return TypedResults.NoContent();
+		}
+		catch (IdentificadorInvalidoException)
+		{
 			return TypedResults.NotFound();
 		}
-		
-		_receitasContext.Receitas.Remove(receita);
-		_receitasContext.SaveChanges();
-		
-		return TypedResults.NoContent();
+
 	}
-	
 
 }
