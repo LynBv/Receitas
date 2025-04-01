@@ -29,7 +29,6 @@ public class ReceitaService
 		if(receita == null)
 			throw new IdentificadorInvalidoException<Receita>();
 			
-				
 		return receita;
 	}
 	

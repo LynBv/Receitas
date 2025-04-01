@@ -23,12 +23,12 @@ public class ReceitaController : ControllerBase
 		return _service.BuscarTodas();
 	}
 
-	[HttpGet("{id}")]
-	public Results<NotFound, Ok<Receita>> GetReceitaPorId(int id)
+	[HttpGet("{idReceita}")]
+	public Results<NotFound, Ok<Receita>> GetReceitaPorId([FromRoute] int idReceita)
 	{
 		try
 		{
-			var receita = _service.BuscarPorId(id);
+			var receita = _service.BuscarPorId(idReceita);
 			return TypedResults.Ok(receita);
 		}
 		catch (IdentificadorInvalidoException)
@@ -45,19 +45,19 @@ public class ReceitaController : ControllerBase
 			var receita = _service.Inserir(receitaDTO);
 			return TypedResults.Ok(receita);
 		}
-		catch (System.Exception)
+		catch (IdentificadorInvalidoException)
 		{
 			return TypedResults.BadRequest();
 
 		}
 	}
 
-	[HttpDelete("{id}")]
-	public Results<NoContent, NotFound> DeleteReceita(int id)
+	[HttpDelete("{idReceita}")]
+	public Results<NoContent, NotFound> DeleteReceita([FromRoute] int idReceita)
 	{
 		try
 		{
-			_service.Excluir(id);
+			_service.Excluir(idReceita);
 			return TypedResults.NoContent();
 		}
 		catch (IdentificadorInvalidoException)

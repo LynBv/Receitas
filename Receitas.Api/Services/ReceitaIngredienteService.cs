@@ -10,32 +10,52 @@ namespace Receitas.Api.Services;
 public class ReceitaIngredienteService
 {
     private ReceitasContext _context;
-
     private ParseReceitaIngrediente _parse;
+    private ReceitaService _receitaService;
 
-    public ReceitaIngredienteService(ReceitasContext contex, ParseReceitaIngrediente parseReceitaIngrediente)
+    public ReceitaIngredienteService(
+    ReceitasContext contex,
+    ParseReceitaIngrediente parseReceitaIngrediente,
+    ReceitaService receitaService)
     {
         _context = contex;
         _parse = parseReceitaIngrediente;
-    }
-    
-    public ReceitaIngrediente? BuscarPorId(int id)
-    {
-        ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente
-            .AsNoTracking()
-			.Include(ri => ri.Ingrediente)
-			.FirstOrDefault(ri => ri.Id == id);
-        
-        return receitaIngrediente;   
+        _receitaService = receitaService;
     }
 
-    public ReceitaIngrediente Inserir(RequestReceitaIngredienteDTO requestReceitaIngredienteDTO, int receitaId)
+    public ReceitaIngrediente BuscarPorId(int idReceita, int idReceitaIngrediente)
     {
-        Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == receitaId);
+        bool receitaExiste =_context.Receitas.Any(r => r.Id == idReceita);
+        
+        if(receitaExiste!)
+            throw new IdentificadorInvalidoException<Receita>();
+
+        ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente
+            .FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
+
+        if (receitaIngrediente == null)
+            throw new IdentificadorInvalidoException<ReceitaIngrediente>();
+
+        if (receitaIngrediente.ReceitaId != idReceita)
+            throw new PaiIncompativelException<Receita, ReceitaIngrediente>();
+        
+        return receitaIngrediente;
+    }
+
+    public List<ReceitaIngrediente> BuscarTodosPorReceita(int idReceita)
+    {
+        Receita receita = _receitaService.BuscarPorId(idReceita);
+
+        return receita.ReceitaIngredientes;
+    }
+
+    public ReceitaIngrediente Inserir(int idReceita, RequestReceitaIngredienteDTO requestReceitaIngredienteDTO)
+    {
+        Receita? receita = _context.Receitas
+            .FirstOrDefault(r => r.Id == idReceita);
 
         if (receita == null)
             throw new IdentificadorInvalidoException<Receita>();
-
 
         var receitaIngrediente = _parse.ParseRequestReceitaIngredienteDTO(requestReceitaIngredienteDTO);
         receita.ReceitaIngredientes.Add(receitaIngrediente);
@@ -44,9 +64,13 @@ public class ReceitaIngredienteService
         return receitaIngrediente;
     }
 
-    public ReceitaIngrediente Atualizar(RequestReceitaIngredienteDTO requestReceitaIngredienteDTO, int id)
+    public ReceitaIngrediente Atualizar(
+        int idReceita,
+        int idReceitaIngrediente,
+        RequestReceitaIngredienteDTO requestReceitaIngredienteDTO)
     {
-        ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente.FirstOrDefault(ri => ri.Id == id);
+        ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente
+            .FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
 
         if (receitaIngrediente == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
@@ -57,15 +81,14 @@ public class ReceitaIngredienteService
         return receitaIngrediente;
     }
 
-    public void Excluir(int id)
+    public void Excluir(int idReceita, int idReceitaIngrediente)
     {
-        ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente.FirstOrDefault(ri => ri.Id == id);
+        ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente.FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
 
         if (receitaIngrediente == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
-        
+
         _context.ReceitaIngrediente.Remove(receitaIngrediente);
         _context.SaveChanges();
-
     }
 }

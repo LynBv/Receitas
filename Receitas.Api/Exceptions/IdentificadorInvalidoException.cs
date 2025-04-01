@@ -16,7 +16,7 @@ public class IdentificadorInvalidoException<TipoEntidade> : IdentificadorInvalid
 
 public class IdentificadorInvalidoException : Exception
 {
-	
+
 	public IdentificadorInvalidoException(string message) 
 		: base (message)
 	{
