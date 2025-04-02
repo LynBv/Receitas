@@ -3,25 +3,18 @@ using Receitas.Api.Exceptions;
 
 namespace Receitas.Api.Middlewares;
 
-public class CustomExceptionHandlerMiddleware
+public class CustomExceptionHandlerMiddleware : IMiddleware
 {
-	private readonly RequestDelegate _next;
-
-	public CustomExceptionHandlerMiddleware(RequestDelegate next)
-	{
-		_next = next;
-	}
-
-	public async Task InvolkeAsync(HttpContext context)
-	{
-		try
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    {
+        try
 		{
-			await _next(context);
+			await next(context);
 		}
 		catch (IdentificadorInvalidoException e)
 		{
 			context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 			await context.Response.WriteAsync(e.Message);
 		}
-	}
+    }
 }

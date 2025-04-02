@@ -18,13 +18,13 @@ public class ReceitaService
 		_parse = parseReceita;
 	}
 
-	public Receita BuscarPorId(int id)
+	public Receita BuscarPorId(int idReceita)
 	{
 		Receita? receita = _context.Receitas
 				.AsNoTracking()
 				.Include(r => r.ReceitaIngredientes)
 				.ThenInclude(i => i.Ingrediente)
-				.FirstOrDefault(r => r.Id == id);
+				.FirstOrDefault(r => r.Id == idReceita);
 				
 		if(receita == null)
 			throw new IdentificadorInvalidoException<Receita>();
@@ -52,9 +52,9 @@ public class ReceitaService
 		return receita;
 	}
 
-	public Receita Atualizar(RequestReceitaDTO receitaDTO, int id)
+	public Receita Atualizar(RequestReceitaDTO receitaDTO, int idReceita)
 	{
-		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == id);
+		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == idReceita);
 
 		if (receita == null)
 			throw new IdentificadorInvalidoException<Receita>();
@@ -66,9 +66,9 @@ public class ReceitaService
 		return receita;
 	}
 
-	public void Excluir(int id)
+	public void Excluir(int idReceita)
 	{
-		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == id);
+		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == idReceita);
 
 		if (receita == null)
 			throw new IdentificadorInvalidoException<Receita>();
@@ -76,5 +76,12 @@ public class ReceitaService
 		_context.Receitas.Remove(receita);
 		_context.SaveChanges();
 
+	}
+	
+	public bool VerificarSeReceitaExiste(int idReceita)
+	{
+	    bool receitaExiste =_context.Receitas.Any(r => r.Id == idReceita);
+        
+        return receitaExiste;
 	}
 }

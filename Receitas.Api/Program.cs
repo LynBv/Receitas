@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Writers;
 using Receitas.Api.Context;
 using Receitas.Api.Middlewares;
+using Receitas.Api.Services;
+using Receitas.Api.Services.Parse;
 
 internal class Program
 {
@@ -14,6 +16,14 @@ internal class Program
 		builder.Services.Configure<JsonOptions>(
 			option => option.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 			
+		builder.Services.AddScoped<CustomExceptionHandlerMiddleware>();
+		builder.Services.AddScoped<IngredienteService>();
+		builder.Services.AddScoped<ReceitaService>();
+		builder.Services.AddScoped<ReceitaIngredienteService>();
+		builder.Services.AddScoped<ParseIngrediente>();
+		builder.Services.AddScoped<ParseReceita>();
+		builder.Services.AddScoped<ParseReceitaIngrediente>();
+		
 		builder.Services.AddControllers()
 			.AddJsonOptions(option => option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 			
@@ -42,7 +52,6 @@ internal class Program
 		app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 		
 		app.MapControllers();
-		
 		
 		using (var scope = app.Services.CreateScope())
 		{

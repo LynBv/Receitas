@@ -2,70 +2,85 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Receitas.Api.Context;
+using Receitas.Api.DTO;
 using Receitas.Api.Entities;
+using Receitas.Api.Exceptions;
+using Receitas.Api.Services;
 
 namespace Receitas.Api.Controllers;
 
 [ApiController]
-[Route ("api/[controller]")]
+[Route("api/[controller]")]
 public class IngredienteController : ControllerBase
 {
-	
-	private ReceitasContext _receitasContext;
-	
-	public IngredienteController(ReceitasContext receitasContext)
+	private IngredienteService _service;
+
+	public IngredienteController(IngredienteService service)
 	{
-		_receitasContext = receitasContext;
+		_service = service;
 	}
-	
+
 	[HttpGet("")]
 	public List<Ingrediente> GetIngredientes()
 	{
-		List<Ingrediente> ingredientes = _receitasContext.Ingredientes
-			.AsNoTracking()
-			.ToList();
-		
-		return ingredientes;
+		return _service.BuscarTodos();
 	}
-	
+
 	[HttpGet("{id}")]
-	public Results<NotFound, Ok<Ingrediente>> GetIngrediente(int id)
+	public Results<NotFound, Ok<Ingrediente>> GetIngrediente([FromRoute] int id)
 	{
-		Ingrediente? ingrediente = _receitasContext.Ingredientes
-			.AsNoTracking()
-			.FirstOrDefault(i => i.Id == id);
-		
-		return ingrediente == null 
-			? TypedResults.NotFound()
-			: TypedResults.Ok(ingrediente);
-	}
-	
-	[HttpPost("")]
-	public Results<BadRequest, Ok<Ingrediente>> PostIngrediente(Ingrediente ingrediente)
-	{
-		_receitasContext.Add(ingrediente);
-		_receitasContext.SaveChanges();
-		return TypedResults.Ok(ingrediente);
-	}
-	
-	[HttpDelete("{id}")]
-	public Results<NoContent, NotFound> DeleteIngrediente(int id)
-	{
-		Ingrediente? ingrediente = _receitasContext.Ingredientes.FirstOrDefault(i => i.Id == id);
-		
-		/* ingrediente == null 
-		? return TypedResults.NotFound()
-		: _receitasContext.Ingredientes.Remove(ingrediente); */
-		
-		if(ingrediente == null){
+		try
+		{
+			var ingrediente = _service.BuscarPorId(id);
+			return TypedResults.Ok(ingrediente);
+		}
+		catch (IdentificadorInvalidoException)
+		{
 			return TypedResults.NotFound();
 		}
-		
-		_receitasContext.Ingredientes.Remove(ingrediente);
-		_receitasContext.SaveChanges();
-		
-		return TypedResults.NoContent();
+	}
 
-		
+	[HttpPost("")]
+	public Results<BadRequest, Ok<Ingrediente>> PostIngrediente([FromBody] RequestIngredienteDTO ingredienteDTO)
+	{
+		try
+		{
+			var ingrediente = _service.Inserir(ingredienteDTO);
+			return TypedResults.Ok(ingrediente);
+		}
+		catch (IdentificadorInvalidoException)
+		{
+			return TypedResults.BadRequest();
+		}
+	}
+
+	[HttpPut("{id}")]
+	public Results<BadRequest, Ok<Ingrediente>> PutIngrediente(
+	[FromRoute] int id, 
+	[FromBody] RequestIngredienteDTO ingredienteDTO)
+	{
+		try
+		{
+			var ingrediente = _service.Atualizar(ingredienteDTO, id);
+			return TypedResults.Ok(ingrediente);
+		}
+		catch (IdentificadorInvalidoException)
+		{
+			return TypedResults.BadRequest();
+		}
+	}
+
+	[HttpDelete("{id}")]
+	public Results<NoContent, NotFound> DeleteIngrediente([FromRoute] int id)
+	{
+		try
+		{
+			_service.Excluir(id);
+			return TypedResults.NoContent();
+		}
+		catch (IdentificadorInvalidoException)
+		{
+			return TypedResults.NotFound();
+		}
 	}
 }

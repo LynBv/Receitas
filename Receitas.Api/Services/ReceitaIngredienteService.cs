@@ -25,9 +25,7 @@ public class ReceitaIngredienteService
 
     public ReceitaIngrediente BuscarPorId(int idReceita, int idReceitaIngrediente)
     {
-        bool receitaExiste =_context.Receitas.Any(r => r.Id == idReceita);
-        
-        if(receitaExiste!)
+        if(!_receitaService.VerificarSeReceitaExiste(idReceita))
             throw new IdentificadorInvalidoException<Receita>();
 
         ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente
@@ -69,11 +67,17 @@ public class ReceitaIngredienteService
         int idReceitaIngrediente,
         RequestReceitaIngredienteDTO requestReceitaIngredienteDTO)
     {
+        if(!_receitaService.VerificarSeReceitaExiste(idReceita))
+            throw new IdentificadorInvalidoException<Receita>();
+            
         ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente
             .FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
 
         if (receitaIngrediente == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
+        
+        if (receitaIngrediente.ReceitaId != idReceita)
+            throw new PaiIncompativelException<Receita, ReceitaIngrediente>();
 
         _parse.ParseRequestReceitaIngredienteDTO(requestReceitaIngredienteDTO, receitaIngrediente);
         _context.SaveChanges();
@@ -83,10 +87,16 @@ public class ReceitaIngredienteService
 
     public void Excluir(int idReceita, int idReceitaIngrediente)
     {
+        if(!_receitaService.VerificarSeReceitaExiste(idReceita))
+            throw new IdentificadorInvalidoException<Receita>();
+            
         ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente.FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
 
         if (receitaIngrediente == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
+            
+        if (receitaIngrediente.ReceitaId != idReceita)
+            throw new PaiIncompativelException<Receita, ReceitaIngrediente>();
 
         _context.ReceitaIngrediente.Remove(receitaIngrediente);
         _context.SaveChanges();

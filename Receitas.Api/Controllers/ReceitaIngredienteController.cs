@@ -82,11 +82,13 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 	
 	[HttpDelete("{idIngrediente}")]
-	public Results<NoContent, NotFound> DeleteReceitaIngrediente([FromRoute] int idIngrediente)
+	public Results<NoContent, NotFound> DeleteReceitaIngrediente(
+	[FromRoute] int idReceita, 
+	[FromRoute] int idIngrediente)
 	{
 	    try
 		{
-			_service.Excluir(idIngrediente);
+			_service.Excluir(idReceita, idIngrediente);
 			return TypedResults.NoContent();
 		}
 		catch (IdentificadorInvalidoException)

@@ -51,6 +51,24 @@ public class ReceitaController : ControllerBase
 
 		}
 	}
+	
+	[HttpPut("{idReceita}")]
+	public Results<BadRequest, Ok<Receita>> PutReceita(
+	[FromRoute] int idReceita,
+	[FromBody] RequestReceitaDTO receitaDTO)
+	{
+		try
+		{
+			var receita = _service.Atualizar(receitaDTO, idReceita);
+			return TypedResults.Ok(receita);
+		}
+		catch (IdentificadorInvalidoException)
+		{
+			return TypedResults.BadRequest();
+
+		}
+	}
+	
 
 	[HttpDelete("{idReceita}")]
 	public Results<NoContent, NotFound> DeleteReceita([FromRoute] int idReceita)

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Receitas.Api.Context;
 using Receitas.Api.DTO;
 using Receitas.Api.Entities;
@@ -8,20 +9,41 @@ namespace Receitas.Api.Services;
 
 public class IngredienteService
 {
-	private ReceitasContext _contex;
+	private ReceitasContext _context;
 	private ParseIngrediente _parse;
 	
 	public IngredienteService(ReceitasContext context, ParseIngrediente parseIngrediente){
-		_contex = context;
+		_context = context;
 		_parse = parseIngrediente;
+	}
+	
+	public Ingrediente BuscarPorId(int id)
+	{
+		Ingrediente? ingrediente = _context.Ingredientes
+			.AsNoTracking()
+			.FirstOrDefault(i => i.Id == id);
+			
+		if(ingrediente == null)
+			throw new IdentificadorInvalidoException<Ingrediente>();
+		
+		return ingrediente;
+	}
+	
+	public List<Ingrediente> BuscarTodos()
+	{
+		List<Ingrediente> ingredientes = _context.Ingredientes
+			.AsNoTracking()
+			.ToList();
+		
+		return ingredientes;
 	}
 	
 	public Ingrediente Inserir(RequestIngredienteDTO ingredienteDTO)
 	{
 		var ingrediente = _parse.ParseRequestIngredienteDto(ingredienteDTO);
 		
-		_contex.Ingredientes.Add(ingrediente);
-		_contex.SaveChanges();
+		_context.Ingredientes.Add(ingrediente);
+		_context.SaveChanges();
 		
 		return ingrediente;
 	}
@@ -29,16 +51,14 @@ public class IngredienteService
 	public Ingrediente Atualizar(RequestIngredienteDTO ingredienteDTO, int id)
 	{
 	
-		Ingrediente? ingrediente = _contex.Ingredientes.FirstOrDefault(i => i.Id == id);
+		Ingrediente? ingrediente = _context.Ingredientes.FirstOrDefault(i => i.Id == id);
 		
 		if(ingrediente == null)
-		{
 			throw new IdentificadorInvalidoException<Ingrediente>();
-		}
 		
 		var ingredienteNew = _parse.ParseRequestIngredienteDto(ingredienteDTO, ingrediente);
 		
-		_contex.SaveChanges();
+		_context.SaveChanges();
 		
 		return ingredienteNew;
 		
@@ -46,16 +66,16 @@ public class IngredienteService
 	
 	public void Excluir(int id)
 	{
-		Ingrediente? ingrediente = _contex.Ingredientes.FirstOrDefault(i => i.Id == id);
+		Ingrediente? ingrediente = _context.Ingredientes.FirstOrDefault(i => i.Id == id);
 		
 		if(ingrediente == null)
 		{
 			throw new IdentificadorInvalidoException<Ingrediente>();
 		}
 		
-		_contex.Ingredientes.Remove(ingrediente);
+		_context.Ingredientes.Remove(ingrediente);
 		
-		_contex.SaveChanges();
+		_context.SaveChanges();
 
 	}
 }
