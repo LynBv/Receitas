@@ -1,4 +1,7 @@
 namespace Receitas.Api.DTO;
 
-public record RequestIngredienteDTO(string Nome);
+public record RequestIngredienteDTO
+{
+    public required string Nome { get; init; }
+};
 

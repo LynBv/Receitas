@@ -18,7 +18,7 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 
 	[HttpGet("{idIngrediente}")]
-	public Results<NotFound, Ok<ReceitaIngrediente>> GetIngrediente(
+	public Results<NotFound, Ok<ResponseReceitaIngredienteDTO>> GetIngrediente(
 		[FromRoute] int idReceita,
 		[FromRoute] int idIngrediente)
 	{

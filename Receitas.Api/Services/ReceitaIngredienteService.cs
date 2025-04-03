@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Receitas.Api.Context;
 using Receitas.Api.DTO;
 using Receitas.Api.Entities;
@@ -23,31 +22,38 @@ public class ReceitaIngredienteService
         _receitaService = receitaService;
     }
 
-    public ReceitaIngrediente BuscarPorId(int idReceita, int idReceitaIngrediente)
+    public ResponseReceitaIngredienteDTO BuscarPorId(int idReceita, int idReceitaIngrediente)
     {
-        if(!_receitaService.VerificarSeReceitaExiste(idReceita))
+        if (!_receitaService.VerificarSeReceitaExiste(idReceita))
             throw new IdentificadorInvalidoException<Receita>();
 
-        ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente
+        var ResponseReceitaIngredienteDTO = _context.ReceitaIngrediente
+            .Select(_parse.ProjetarEntidadeParaDto())
             .FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
 
-        if (receitaIngrediente == null)
+        if (ResponseReceitaIngredienteDTO == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
 
-        if (receitaIngrediente.ReceitaId != idReceita)
+        if (ResponseReceitaIngredienteDTO.ReceitaId != idReceita)
             throw new PaiIncompativelException<Receita, ReceitaIngrediente>();
-        
-        return receitaIngrediente;
+
+        return ResponseReceitaIngredienteDTO;
     }
 
-    public List<ReceitaIngrediente> BuscarTodosPorReceita(int idReceita)
+    public List<ResponseReceitaIngredienteDTO> BuscarTodosPorReceita(int idReceita)
     {
-        Receita receita = _receitaService.BuscarPorId(idReceita);
+        if (!_receitaService.VerificarSeReceitaExiste(idReceita))
+            throw new IdentificadorInvalidoException<Receita>();
 
-        return receita.ReceitaIngredientes;
+        List<ResponseReceitaIngredienteDTO> receitaIngredienteDTOs = _context.ReceitaIngrediente
+            .Where(ri => ri.ReceitaId == idReceita)
+            .Select(_parse.ProjetarEntidadeParaDto())
+            .ToList();
+            
+        return receitaIngredienteDTOs;
     }
 
-    public ReceitaIngrediente Inserir(int idReceita, RequestReceitaIngredienteDTO requestReceitaIngredienteDTO)
+    public ResponseReceitaIngredienteDTO Inserir(int idReceita, RequestReceitaIngredienteDTO requestReceitaIngredienteDTO)
     {
         Receita? receita = _context.Receitas
             .FirstOrDefault(r => r.Id == idReceita);
@@ -59,42 +65,46 @@ public class ReceitaIngredienteService
         receita.ReceitaIngredientes.Add(receitaIngrediente);
         _context.SaveChanges();
 
-        return receitaIngrediente;
+        var receitaIngredienteDTO = _parse.ParseReceitaIngredientetoResponseDTO(receitaIngrediente);
+
+        return receitaIngredienteDTO;
     }
 
-    public ReceitaIngrediente Atualizar(
+    public ResponseReceitaIngredienteDTO Atualizar(
         int idReceita,
         int idReceitaIngrediente,
         RequestReceitaIngredienteDTO requestReceitaIngredienteDTO)
     {
-        if(!_receitaService.VerificarSeReceitaExiste(idReceita))
+        if (!_receitaService.VerificarSeReceitaExiste(idReceita))
             throw new IdentificadorInvalidoException<Receita>();
-            
+
         ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente
             .FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
 
         if (receitaIngrediente == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
-        
+
         if (receitaIngrediente.ReceitaId != idReceita)
             throw new PaiIncompativelException<Receita, ReceitaIngrediente>();
 
         _parse.ParseRequestReceitaIngredienteDTO(requestReceitaIngredienteDTO, receitaIngrediente);
         _context.SaveChanges();
 
-        return receitaIngrediente;
+        var receitaIngredienteDTO = _parse.ParseReceitaIngredientetoResponseDTO(receitaIngrediente);
+
+        return receitaIngredienteDTO;
     }
 
     public void Excluir(int idReceita, int idReceitaIngrediente)
     {
-        if(!_receitaService.VerificarSeReceitaExiste(idReceita))
+        if (!_receitaService.VerificarSeReceitaExiste(idReceita))
             throw new IdentificadorInvalidoException<Receita>();
-            
+
         ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente.FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
 
         if (receitaIngrediente == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
-            
+
         if (receitaIngrediente.ReceitaId != idReceita)
             throw new PaiIncompativelException<Receita, ReceitaIngrediente>();
 
