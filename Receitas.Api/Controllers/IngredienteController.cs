@@ -21,13 +21,13 @@ public class IngredienteController : ControllerBase
 	}
 
 	[HttpGet("")]
-	public List<Ingrediente> GetIngredientes()
+	public List<ResponseIngredienteDTO> GetIngredientes()
 	{
 		return _service.BuscarTodos();
 	}
 
 	[HttpGet("{id}")]
-	public Results<NotFound, Ok<Ingrediente>> GetIngrediente([FromRoute] int id)
+	public Results<NotFound, Ok<ResponseIngredienteDTO>> GetIngrediente([FromRoute] int id)
 	{
 		try
 		{
@@ -41,7 +41,7 @@ public class IngredienteController : ControllerBase
 	}
 
 	[HttpPost("")]
-	public Results<BadRequest, Ok<Ingrediente>> PostIngrediente([FromBody] RequestIngredienteDTO ingredienteDTO)
+	public Results<BadRequest, Ok<ResponseIngredienteDTO>> PostIngrediente([FromBody] RequestIngredienteDTO ingredienteDTO)
 	{
 		try
 		{
@@ -55,7 +55,7 @@ public class IngredienteController : ControllerBase
 	}
 
 	[HttpPut("{id}")]
-	public Results<BadRequest, Ok<Ingrediente>> PutIngrediente(
+	public Results<BadRequest, Ok<ResponseIngredienteDTO>> PutIngrediente(
 	[FromRoute] int id, 
 	[FromBody] RequestIngredienteDTO ingredienteDTO)
 	{

@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 using Receitas.Api.DTO;
 using Receitas.Api.Entities;
 
@@ -12,6 +14,49 @@ public class ParseReceita
 		_parseReceitaIngrediente = parseReceitaIngrediente;
 	}
 
+	public Expression<Func<Receita, ResponseReceitaDTO>> ProjetarEntidadeParaDto()
+	{
+		return r => new ResponseReceitaDTO()
+		{
+			Id = r.Id,
+			Categoria = r.Categoria,
+			Descricao = r.Descricao,
+			Dica = r.Dica,
+			Instrucoes = r.Instrucoes,
+			Nome = r.Nome,
+			Porcoes = r.Porcoes,
+			TempoDePreparoMinutos = r.TempoDePreparoMinutos,
+			ReceitaIngredientes = r.ReceitaIngredientes.Select(ri => new ResponseReceitaIngredienteDTO()
+			{
+				Id = ri.Id,
+				Quantidade = ri.Quantidade,
+				ReceitaId = ri.ReceitaId,
+				UnidadeDeMedida = ri.UnidadeDeMedida,
+				Ingrediente = new ResponseIngredienteDTO()
+				{
+					Id = ri.Ingrediente!.Id,
+					Nome = ri.Ingrediente.Nome
+				}
+			}).ToList()
+        };
+	}
+
+	public ResponseReceitaDTO ParseResponseReceitaDto(Receita r)
+	{
+	    return new ResponseReceitaDTO()
+	    {
+			Id = r.Id,
+			Categoria = r.Categoria,
+			Descricao = r.Descricao,
+			Dica = r.Dica,
+			Instrucoes = r.Instrucoes,
+			Nome = r.Nome,
+			Porcoes = r.Porcoes,
+			TempoDePreparoMinutos = r.TempoDePreparoMinutos,
+			ReceitaIngredientes = r.ReceitaIngredientes
+			.Select(_parseReceitaIngrediente.ParseReceitaIngredientetoResponseDTO).ToList()
+        };
+	}
 	public Receita ParseRequestReceitaDto(RequestReceitaDTO receitaDTO)
 	{
 		Receita receita = new();
@@ -31,7 +76,7 @@ public class ParseReceita
 
 		foreach (RequestReceitaIngredienteDTO receitaIngredienteDTO in receitaDTO.ReceitaIngredientes)
 		{
-			ReceitaIngrediente? receitaIngrediente = 
+			ReceitaIngrediente? receitaIngrediente =
 				receita.ReceitaIngredientes.FirstOrDefault(ri => ri.Id == receitaIngredienteDTO.Id);
 
 			if (receitaIngrediente == null)

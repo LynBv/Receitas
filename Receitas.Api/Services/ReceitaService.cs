@@ -18,12 +18,11 @@ public class ReceitaService
 		_parse = parseReceita;
 	}
 
-	public Receita BuscarPorId(int idReceita)
+	public ResponseReceitaDTO BuscarPorId(int idReceita)
 	{
-		Receita? receita = _context.Receitas
+		ResponseReceitaDTO? receita = _context.Receitas
 				.AsNoTracking()
-				.Include(r => r.ReceitaIngredientes)
-				.ThenInclude(i => i.Ingrediente)
+				.Select(_parse.ProjetarEntidadeParaDto())
 				.FirstOrDefault(r => r.Id == idReceita);
 				
 		if(receita == null)
@@ -32,27 +31,26 @@ public class ReceitaService
 		return receita;
 	}
 	
-	public List<Receita> BuscarTodas()
+	public List<ResponseReceitaDTO> BuscarTodas()
 	{
-	    List<Receita> receitas = _context.Receitas
+	    List<ResponseReceitaDTO> receitas = _context.Receitas
 			.AsNoTracking()
-			.Include(r => r.ReceitaIngredientes)
-			.ThenInclude(i => i.Ingrediente)
+			.Select(_parse.ProjetarEntidadeParaDto())
 			.ToList();
 		
 		return receitas;
 	}
 
-	public Receita Inserir(RequestReceitaDTO receitaDTO)
+	public ResponseReceitaDTO Inserir(RequestReceitaDTO receitaDTO)
 	{
 		var receita = _parse.ParseRequestReceitaDto(receitaDTO);
 		_context.Add(receita);
 		_context.SaveChanges();
 
-		return receita;
+		return _parse.ParseResponseReceitaDto(receita);
 	}
 
-	public Receita Atualizar(RequestReceitaDTO receitaDTO, int idReceita)
+	public ResponseReceitaDTO Atualizar(RequestReceitaDTO receitaDTO, int idReceita)
 	{
 		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == idReceita);
 
@@ -63,7 +61,7 @@ public class ReceitaService
 
 		_context.SaveChanges();
 
-		return receita;
+		return _parse.ParseResponseReceitaDto(receita);
 	}
 
 	public void Excluir(int idReceita)

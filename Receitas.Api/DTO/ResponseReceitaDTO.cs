@@ -7,9 +7,9 @@ public record ResponseReceitaDTO{
 	public required string Nome { get; init; }
 	public required List<string> Instrucoes { get; init; } 
 	public required ECategoria Categoria { get; init; }
-	public required List<RequestReceitaIngredienteDTO> ReceitaIngredientes { get; init; }
-	public required string Descricao { get; init; }
-	public required string? Dica { get; init; }
-	public required int? Porcoes { get; init; }
-	public required int? TempoDePreparoMinutos { get; init; }
+	public required List<ResponseReceitaIngredienteDTO> ReceitaIngredientes { get; init; }
+	public  string? Descricao { get; init; }
+	public  string? Dica { get; init; }
+	public  int? Porcoes { get; init; }
+	public int? TempoDePreparoMinutos { get; init; }
 }

@@ -17,10 +17,11 @@ public class IngredienteService
 		_parse = parseIngrediente;
 	}
 	
-	public Ingrediente BuscarPorId(int id)
+	public ResponseIngredienteDTO BuscarPorId(int id)
 	{
-		Ingrediente? ingrediente = _context.Ingredientes
+		ResponseIngredienteDTO? ingrediente = _context.Ingredientes
 			.AsNoTracking()
+			.Select(_parse.ProjetarEntidadeDto())
 			.FirstOrDefault(i => i.Id == id);
 			
 		if(ingrediente == null)
@@ -29,26 +30,27 @@ public class IngredienteService
 		return ingrediente;
 	}
 	
-	public List<Ingrediente> BuscarTodos()
+	public List<ResponseIngredienteDTO> BuscarTodos()
 	{
-		List<Ingrediente> ingredientes = _context.Ingredientes
+		List<ResponseIngredienteDTO> ingredientes = _context.Ingredientes
 			.AsNoTracking()
+			.Select(_parse.ProjetarEntidadeDto())
 			.ToList();
 		
 		return ingredientes;
 	}
 	
-	public Ingrediente Inserir(RequestIngredienteDTO ingredienteDTO)
+	public ResponseIngredienteDTO Inserir(RequestIngredienteDTO ingredienteDTO)
 	{
 		var ingrediente = _parse.ParseRequestIngredienteDto(ingredienteDTO);
 		
 		_context.Ingredientes.Add(ingrediente);
 		_context.SaveChanges();
 		
-		return ingrediente;
+		return _parse.ParseResponseIngredienteDto(ingrediente);
 	}
 	
-	public Ingrediente Atualizar(RequestIngredienteDTO ingredienteDTO, int id)
+	public ResponseIngredienteDTO Atualizar(RequestIngredienteDTO ingredienteDTO, int id)
 	{
 	
 		Ingrediente? ingrediente = _context.Ingredientes.FirstOrDefault(i => i.Id == id);
@@ -60,7 +62,7 @@ public class IngredienteService
 		
 		_context.SaveChanges();
 		
-		return ingredienteNew;
+		return _parse.ParseResponseIngredienteDto(ingredienteNew);
 		
 	}
 	

@@ -23,26 +23,24 @@ public class ParseReceitaIngrediente
 			UnidadeDeMedida = ri.UnidadeDeMedida,
 			ReceitaId = ri.ReceitaId,
 			
-			Ingrediente = new RequestIngredienteDTO()
+			Ingrediente = new ResponseIngredienteDTO()
 			{
-				Nome = ri.Ingrediente!.Nome
+				Id = ri.Ingrediente!.Id,
+				Nome = ri.Ingrediente.Nome
 			}
 		};
 	}
 	
 	// funcao que pega um objeto inteiro e preenche outro em memoria
-	public ResponseReceitaIngredienteDTO ParseReceitaIngredientetoResponseDTO(ReceitaIngrediente receitaIngrediente)
+	public ResponseReceitaIngredienteDTO ParseReceitaIngredientetoResponseDTO(ReceitaIngrediente ri)
 	{
 		return new ResponseReceitaIngredienteDTO() 
 		{ 
-			Id = receitaIngrediente.Id,
-			Quantidade = receitaIngrediente.Quantidade,
-			UnidadeDeMedida = receitaIngrediente.UnidadeDeMedida,
-			ReceitaId = receitaIngrediente.ReceitaId,
-			Ingrediente = new RequestIngredienteDTO()
-			{
-				Nome = receitaIngrediente.Ingrediente!.Nome
-			}
+			Id = ri.Id,
+			Quantidade = ri.Quantidade,
+			UnidadeDeMedida = ri.UnidadeDeMedida,
+			ReceitaId = ri.ReceitaId,
+			Ingrediente = _parseIngrediente.ParseResponseIngredienteDto(ri.Ingrediente!)
 		};
 	}
 

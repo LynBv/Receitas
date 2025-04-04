@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Receitas.Api.Context;
 using Receitas.Api.DTO;
 using Receitas.Api.Entities;
@@ -28,6 +29,7 @@ public class ReceitaIngredienteService
             throw new IdentificadorInvalidoException<Receita>();
 
         var ResponseReceitaIngredienteDTO = _context.ReceitaIngrediente
+            .AsNoTracking()
             .Select(_parse.ProjetarEntidadeParaDto())
             .FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
 
@@ -46,6 +48,7 @@ public class ReceitaIngredienteService
             throw new IdentificadorInvalidoException<Receita>();
 
         List<ResponseReceitaIngredienteDTO> receitaIngredienteDTOs = _context.ReceitaIngrediente
+            .AsNoTracking()
             .Where(ri => ri.ReceitaId == idReceita)
             .Select(_parse.ProjetarEntidadeParaDto())
             .ToList();

@@ -18,13 +18,13 @@ public class ReceitaController : ControllerBase
 	}
 
 	[HttpGet("")]
-	public List<Receita> GetReceitas()
+	public List<ResponseReceitaDTO> GetReceitas()
 	{
 		return _service.BuscarTodas();
 	}
 
 	[HttpGet("{idReceita}")]
-	public Results<NotFound, Ok<Receita>> GetReceitaPorId([FromRoute] int idReceita)
+	public Results<NotFound, Ok<ResponseReceitaDTO>> GetReceitaPorId([FromRoute] int idReceita)
 	{
 		try
 		{
@@ -38,7 +38,7 @@ public class ReceitaController : ControllerBase
 	}
 
 	[HttpPost("")]
-	public Results<BadRequest, Ok<Receita>> PostReceita([FromBody] RequestReceitaDTO receitaDTO)
+	public Results<BadRequest, Ok<ResponseReceitaDTO>> PostReceita([FromBody] RequestReceitaDTO receitaDTO)
 	{
 		try
 		{
@@ -53,7 +53,7 @@ public class ReceitaController : ControllerBase
 	}
 	
 	[HttpPut("{idReceita}")]
-	public Results<BadRequest, Ok<Receita>> PutReceita(
+	public Results<BadRequest, Ok<ResponseReceitaDTO>> PutReceita(
 	[FromRoute] int idReceita,
 	[FromBody] RequestReceitaDTO receitaDTO)
 	{

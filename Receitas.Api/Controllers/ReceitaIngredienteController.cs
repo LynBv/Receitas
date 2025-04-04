@@ -35,7 +35,7 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 
 	[HttpGet("")]
-	public Results<NotFound, Ok<List<ReceitaIngrediente>>> GetTodosIngredientePorReceita([FromRoute] int idReceita)
+	public Results<NotFound, Ok<List<ResponseReceitaIngredienteDTO>>> GetTodosIngredientePorReceita([FromRoute] int idReceita)
 	{
 		try
 		{
@@ -49,7 +49,7 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 	
 	[HttpPost("")]
-	public Results<BadRequest, Ok<ReceitaIngrediente>> PostReceitaIngrediente(
+	public Results<BadRequest, Ok<ResponseReceitaIngredienteDTO>> PostReceitaIngrediente(
 		[FromRoute] int idReceita, 
 		[FromBody] RequestReceitaIngredienteDTO receitaIngredienteDto)
 	{ 
@@ -65,7 +65,7 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 	
 	[HttpPut("{idIngrediente}")]
-	public Results<BadRequest, Ok<ReceitaIngrediente>> PutReceitaIngriente(
+	public Results<BadRequest, Ok<ResponseReceitaIngredienteDTO>> PutReceitaIngriente(
 		[FromRoute] int idReceita, 
 		[FromRoute] int idIngrediente,
 		[FromBody] RequestReceitaIngredienteDTO receitaIngredienteDto)
@@ -96,20 +96,5 @@ public class ReceitaIngredienteController : ControllerBase
 			return TypedResults.NotFound();
 		}
 	}
-	// Lista todos ingredientes da receita
-	// GET - api/receita/{id-receita}/ingrediente
-
-	// Lista ingrediente pelo id
-	// GET - api/receita/{id-receita}/ingrediente/{id-receita-ingrediente}
-
-	// Inclui ingrediente na receita
-	// POST - api/receita/{id-receita}/ingrediente
-
-	// Edita um ingrediente na receita
-	// PUT - api/receita/{id-receita}/ingrediente/{id-receita-ingrediente}
-
-	// Exclui um ingrediente na receita
-	// DELETE - api/receita/{id-receita}/ingrediente/{id-receita-ingrediente}
-
 
 }
