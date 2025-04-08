@@ -17,12 +17,12 @@ public class IngredienteService
 		_parse = parseIngrediente;
 	}
 	
-	public ResponseIngredienteDTO BuscarPorId(int id)
+	public async Task<ResponseIngredienteDTO> BuscarPorIdAsync(int id, CancellationToken cancellationToken)
 	{
-		ResponseIngredienteDTO? ingrediente = _context.Ingredientes
+		ResponseIngredienteDTO? ingrediente = await _context.Ingredientes
 			.AsNoTracking()
 			.Select(_parse.ProjetarEntidadeDto())
-			.FirstOrDefault(i => i.Id == id);
+			.FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
 			
 		if(ingrediente == null)
 			throw new IdentificadorInvalidoException<Ingrediente>();
@@ -30,45 +30,50 @@ public class IngredienteService
 		return ingrediente;
 	}
 	
-	public List<ResponseIngredienteDTO> BuscarTodos()
+	public async Task<List<ResponseIngredienteDTO>> BuscarTodosAsync(CancellationToken cancellationToken)
 	{
-		List<ResponseIngredienteDTO> ingredientes = _context.Ingredientes
+		List<ResponseIngredienteDTO> ingredientes = await _context.Ingredientes
 			.AsNoTracking()
 			.Select(_parse.ProjetarEntidadeDto())
-			.ToList();
+			.ToListAsync(cancellationToken);
 		
 		return ingredientes;
 	}
 	
-	public ResponseIngredienteDTO Inserir(RequestIngredienteDTO ingredienteDTO)
+	public async Task<ResponseIngredienteDTO> InserirAsync(
+		RequestIngredienteDTO ingredienteDTO,
+		CancellationToken cancellationToken)
 	{
 		var ingrediente = _parse.ParseRequestIngredienteDto(ingredienteDTO);
 		
-		_context.Ingredientes.Add(ingrediente);
-		_context.SaveChanges();
+		await _context.Ingredientes.AddAsync(ingrediente, cancellationToken);
+		await _context.SaveChangesAsync(cancellationToken);
 		
 		return _parse.ParseResponseIngredienteDto(ingrediente);
 	}
 	
-	public ResponseIngredienteDTO Atualizar(RequestIngredienteDTO ingredienteDTO, int id)
+	public async Task<ResponseIngredienteDTO> AtualizarAsync(
+		RequestIngredienteDTO ingredienteDTO,
+		int id,
+		CancellationToken cancellationToken)
 	{
 	
-		Ingrediente? ingrediente = _context.Ingredientes.FirstOrDefault(i => i.Id == id);
+		Ingrediente? ingrediente = await _context.Ingredientes.FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
 		
 		if(ingrediente == null)
 			throw new IdentificadorInvalidoException<Ingrediente>();
 		
 		var ingredienteNew = _parse.ParseRequestIngredienteDto(ingredienteDTO, ingrediente);
 		
-		_context.SaveChanges();
+		await _context.SaveChangesAsync(cancellationToken);
 		
 		return _parse.ParseResponseIngredienteDto(ingredienteNew);
 		
 	}
 	
-	public void Excluir(int id)
+	public async Task ExcluirAsync(int id, CancellationToken cancellationToken)
 	{
-		Ingrediente? ingrediente = _context.Ingredientes.FirstOrDefault(i => i.Id == id);
+		Ingrediente? ingrediente = await _context.Ingredientes.FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
 		
 		if(ingrediente == null)
 		{
@@ -77,7 +82,7 @@ public class IngredienteService
 		
 		_context.Ingredientes.Remove(ingrediente);
 		
-		_context.SaveChanges();
+		await _context.SaveChangesAsync(cancellationToken);
 
 	}
 }

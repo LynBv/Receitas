@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Receitas.Api.Context;
 using Receitas.Api.DTO;
@@ -18,12 +19,12 @@ public class ReceitaService
 		_parse = parseReceita;
 	}
 
-	public ResponseReceitaDTO BuscarPorId(int idReceita)
+	public async Task<ResponseReceitaDTO> BuscarPorIdAsync(int idReceita, CancellationToken cancellationToken)
 	{
-		ResponseReceitaDTO? receita = _context.Receitas
+		ResponseReceitaDTO? receita = await _context.Receitas
 				.AsNoTracking()
 				.Select(_parse.ProjetarEntidadeParaDto())
-				.FirstOrDefault(r => r.Id == idReceita);
+				.FirstOrDefaultAsync(r => r.Id == idReceita, cancellationToken);
 				
 		if(receita == null)
 			throw new IdentificadorInvalidoException<Receita>();
@@ -31,54 +32,57 @@ public class ReceitaService
 		return receita;
 	}
 	
-	public List<ResponseReceitaDTO> BuscarTodas()
+	public async Task<List<ResponseReceitaDTO>> BuscarTodasAsync(CancellationToken cancellationToken)
 	{
-	    List<ResponseReceitaDTO> receitas = _context.Receitas
+	    List<ResponseReceitaDTO> receitas = await _context.Receitas
 			.AsNoTracking()
 			.Select(_parse.ProjetarEntidadeParaDto())
-			.ToList();
+			.ToListAsync(cancellationToken);
 		
 		return receitas;
 	}
 
-	public ResponseReceitaDTO Inserir(RequestReceitaDTO receitaDTO)
+	public async Task<ResponseReceitaDTO> InserirAsync(RequestReceitaDTO receitaDTO, CancellationToken cancellationToken)
 	{
 		var receita = _parse.ParseRequestReceitaDto(receitaDTO);
-		_context.Add(receita);
-		_context.SaveChanges();
+		await _context.AddAsync(receita, cancellationToken);
+		await _context.SaveChangesAsync(cancellationToken);
 
 		return _parse.ParseResponseReceitaDto(receita);
 	}
 
-	public ResponseReceitaDTO Atualizar(RequestReceitaDTO receitaDTO, int idReceita)
+	public async Task<ResponseReceitaDTO> AtualizarAsync(
+		RequestReceitaDTO receitaDTO,
+		int idReceita,
+		CancellationToken cancellationToken)
 	{
-		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == idReceita);
+		Receita? receita = await _context.Receitas.FirstOrDefaultAsync(r => r.Id == idReceita, cancellationToken);
 
 		if (receita == null)
 			throw new IdentificadorInvalidoException<Receita>();
 
 		_parse.ParseRequestReceitaDto(receitaDTO, receita);
 
-		_context.SaveChanges();
+		await _context.SaveChangesAsync(cancellationToken);
 
 		return _parse.ParseResponseReceitaDto(receita);
 	}
 
-	public void Excluir(int idReceita)
+	public async Task ExcluirAsync(int idReceita, CancellationToken cancellationToken)
 	{
-		Receita? receita = _context.Receitas.FirstOrDefault(r => r.Id == idReceita);
+		Receita? receita = await _context.Receitas.FirstOrDefaultAsync(r => r.Id == idReceita, cancellationToken);
 
 		if (receita == null)
 			throw new IdentificadorInvalidoException<Receita>();
 
 		_context.Receitas.Remove(receita);
-		_context.SaveChanges();
+		await _context.SaveChangesAsync(cancellationToken);
 
 	}
 	
-	public bool VerificarSeReceitaExiste(int idReceita)
+	public async Task<bool> VerificarSeReceitaExisteAsync(int idReceita, CancellationToken cancellationToken)
 	{
-	    bool receitaExiste =_context.Receitas.Any(r => r.Id == idReceita);
+	    bool receitaExiste = await _context.Receitas.AnyAsync(r => r.Id == idReceita, cancellationToken);
         
         return receitaExiste;
 	}

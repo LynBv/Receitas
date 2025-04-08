@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Receitas.Api.Context;
 using Receitas.Api.DTO;
@@ -23,15 +24,18 @@ public class ReceitaIngredienteService
         _receitaService = receitaService;
     }
 
-    public ResponseReceitaIngredienteDTO BuscarPorId(int idReceita, int idReceitaIngrediente)
+    public async Task<ResponseReceitaIngredienteDTO> BuscarPorIdAsync(
+        int idReceita,
+        int idReceitaIngrediente,
+        CancellationToken cancellationToken)
     {
-        if (!_receitaService.VerificarSeReceitaExiste(idReceita))
+        if (! await _receitaService.VerificarSeReceitaExisteAsync(idReceita, cancellationToken))
             throw new IdentificadorInvalidoException<Receita>();
 
-        var ResponseReceitaIngredienteDTO = _context.ReceitaIngrediente
+        var ResponseReceitaIngredienteDTO = await _context.ReceitaIngrediente
             .AsNoTracking()
             .Select(_parse.ProjetarEntidadeParaDto())
-            .FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
+            .FirstOrDefaultAsync(ri => ri.Id == idReceitaIngrediente, cancellationToken);
 
         if (ResponseReceitaIngredienteDTO == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
@@ -42,47 +46,53 @@ public class ReceitaIngredienteService
         return ResponseReceitaIngredienteDTO;
     }
 
-    public List<ResponseReceitaIngredienteDTO> BuscarTodosPorReceita(int idReceita)
+    public async Task<List<ResponseReceitaIngredienteDTO>> BuscarTodosPorReceitaAsync(
+        int idReceita,
+        CancellationToken cancellationToken)
     {
-        if (!_receitaService.VerificarSeReceitaExiste(idReceita))
+        if (! await _receitaService.VerificarSeReceitaExisteAsync(idReceita, cancellationToken))
             throw new IdentificadorInvalidoException<Receita>();
 
-        List<ResponseReceitaIngredienteDTO> receitaIngredienteDTOs = _context.ReceitaIngrediente
+        List<ResponseReceitaIngredienteDTO> receitaIngredienteDTOs = await _context.ReceitaIngrediente
             .AsNoTracking()
             .Where(ri => ri.ReceitaId == idReceita)
             .Select(_parse.ProjetarEntidadeParaDto())
-            .ToList();
+            .ToListAsync(cancellationToken);
             
         return receitaIngredienteDTOs;
     }
 
-    public ResponseReceitaIngredienteDTO Inserir(int idReceita, RequestReceitaIngredienteDTO requestReceitaIngredienteDTO)
+    public async Task<ResponseReceitaIngredienteDTO> InserirAsync(
+        int idReceita,
+        RequestReceitaIngredienteDTO requestReceitaIngredienteDTO,
+        CancellationToken cancellationToken)
     {
-        Receita? receita = _context.Receitas
-            .FirstOrDefault(r => r.Id == idReceita);
+        Receita? receita = await _context.Receitas
+            .FirstOrDefaultAsync(r => r.Id == idReceita, cancellationToken);
 
         if (receita == null)
             throw new IdentificadorInvalidoException<Receita>();
 
         var receitaIngrediente = _parse.ParseRequestReceitaIngredienteDTO(requestReceitaIngredienteDTO);
         receita.ReceitaIngredientes.Add(receitaIngrediente);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync(cancellationToken);
 
         var receitaIngredienteDTO = _parse.ParseReceitaIngredientetoResponseDTO(receitaIngrediente);
 
         return receitaIngredienteDTO;
     }
 
-    public ResponseReceitaIngredienteDTO Atualizar(
+    public async Task<ResponseReceitaIngredienteDTO> AtualizarAsync(
         int idReceita,
         int idReceitaIngrediente,
-        RequestReceitaIngredienteDTO requestReceitaIngredienteDTO)
+        RequestReceitaIngredienteDTO requestReceitaIngredienteDTO,
+        CancellationToken cancellationToken)
     {
-        if (!_receitaService.VerificarSeReceitaExiste(idReceita))
+        if (! await _receitaService.VerificarSeReceitaExisteAsync(idReceita, cancellationToken))
             throw new IdentificadorInvalidoException<Receita>();
 
-        ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente
-            .FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
+        ReceitaIngrediente? receitaIngrediente = await _context.ReceitaIngrediente
+            .FirstOrDefaultAsync(ri => ri.Id == idReceitaIngrediente, cancellationToken);
 
         if (receitaIngrediente == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
@@ -91,19 +101,20 @@ public class ReceitaIngredienteService
             throw new PaiIncompativelException<Receita, ReceitaIngrediente>();
 
         _parse.ParseRequestReceitaIngredienteDTO(requestReceitaIngredienteDTO, receitaIngrediente);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync(cancellationToken);
 
         var receitaIngredienteDTO = _parse.ParseReceitaIngredientetoResponseDTO(receitaIngrediente);
 
         return receitaIngredienteDTO;
     }
 
-    public void Excluir(int idReceita, int idReceitaIngrediente)
+    public async Task ExcluirAsync(int idReceita, int idReceitaIngrediente, CancellationToken cancellationToken)
     {
-        if (!_receitaService.VerificarSeReceitaExiste(idReceita))
+        if (!await _receitaService.VerificarSeReceitaExisteAsync(idReceita, cancellationToken))
             throw new IdentificadorInvalidoException<Receita>();
 
-        ReceitaIngrediente? receitaIngrediente = _context.ReceitaIngrediente.FirstOrDefault(ri => ri.Id == idReceitaIngrediente);
+        ReceitaIngrediente? receitaIngrediente = 
+            await _context.ReceitaIngrediente.FirstOrDefaultAsync(ri => ri.Id == idReceitaIngrediente, cancellationToken);
 
         if (receitaIngrediente == null)
             throw new IdentificadorInvalidoException<ReceitaIngrediente>();
@@ -112,6 +123,6 @@ public class ReceitaIngredienteService
             throw new PaiIncompativelException<Receita, ReceitaIngrediente>();
 
         _context.ReceitaIngrediente.Remove(receitaIngrediente);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

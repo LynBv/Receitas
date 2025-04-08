@@ -1,8 +1,11 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Receitas.Api", "Receitas.Api\Receitas.Api.csproj", "{7D7F86AD-CCC4-6661-4254-3E3AA3B443CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Receitas.Api.Tests", "Receitas.Api.Tests\Receitas.Api.Tests.csproj", "{4DD053AB-A797-4B45-8CAC-2DFF7684B7C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,6 +17,10 @@ Global
 		{7D7F86AD-CCC4-6661-4254-3E3AA3B443CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D7F86AD-CCC4-6661-4254-3E3AA3B443CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D7F86AD-CCC4-6661-4254-3E3AA3B443CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DD053AB-A797-4B45-8CAC-2DFF7684B7C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DD053AB-A797-4B45-8CAC-2DFF7684B7C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DD053AB-A797-4B45-8CAC-2DFF7684B7C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DD053AB-A797-4B45-8CAC-2DFF7684B7C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

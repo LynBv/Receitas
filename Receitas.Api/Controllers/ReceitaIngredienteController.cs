@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Receitas.Api.DTO;
@@ -18,13 +19,15 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 
 	[HttpGet("{idIngrediente}")]
-	public Results<NotFound, Ok<ResponseReceitaIngredienteDTO>> GetIngrediente(
+	public async Task<Results<NotFound, Ok<ResponseReceitaIngredienteDTO>>> GetIngrediente(
 		[FromRoute] int idReceita,
-		[FromRoute] int idIngrediente)
+		[FromRoute] int idIngrediente,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
-			var receitaIngrediente = _service.BuscarPorId(idReceita,idIngrediente);
+			var receitaIngrediente = await
+			 _service.BuscarPorIdAsync(idReceita, idIngrediente, cancellationToken);
 			return TypedResults.Ok(receitaIngrediente);
 		}
 		catch (IdentificadorInvalidoException)
@@ -35,11 +38,13 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 
 	[HttpGet("")]
-	public Results<NotFound, Ok<List<ResponseReceitaIngredienteDTO>>> GetTodosIngredientePorReceita([FromRoute] int idReceita)
+	public async Task<Results<NotFound, Ok<List<ResponseReceitaIngredienteDTO>>>> GetTodosIngredientePorReceita(
+		[FromRoute] int idReceita,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
-			var ingredientes = _service.BuscarTodosPorReceita(idReceita);
+			var ingredientes = await _service.BuscarTodosPorReceitaAsync(idReceita, cancellationToken);
 			return TypedResults.Ok(ingredientes);
 		}
 		catch (IdentificadorInvalidoException)
@@ -49,13 +54,14 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 	
 	[HttpPost("")]
-	public Results<BadRequest, Ok<ResponseReceitaIngredienteDTO>> PostReceitaIngrediente(
+	public async Task<Results<BadRequest, Ok<ResponseReceitaIngredienteDTO>>> PostReceitaIngrediente(
 		[FromRoute] int idReceita, 
-		[FromBody] RequestReceitaIngredienteDTO receitaIngredienteDto)
+		[FromBody] RequestReceitaIngredienteDTO receitaIngredienteDto,
+		CancellationToken cancellationToken)
 	{ 
 		try
 		{
-			var receitaIngrediente = _service.Inserir(idReceita, receitaIngredienteDto);
+			var receitaIngrediente = await _service.InserirAsync(idReceita, receitaIngredienteDto, cancellationToken);
 			return TypedResults.Ok(receitaIngrediente);
 		}
 		catch (IdentificadorInvalidoException)
@@ -65,14 +71,16 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 	
 	[HttpPut("{idIngrediente}")]
-	public Results<BadRequest, Ok<ResponseReceitaIngredienteDTO>> PutReceitaIngriente(
+	public async Task<Results<BadRequest, Ok<ResponseReceitaIngredienteDTO>>> PutReceitaIngriente(
 		[FromRoute] int idReceita, 
 		[FromRoute] int idIngrediente,
-		[FromBody] RequestReceitaIngredienteDTO receitaIngredienteDto)
+		[FromBody] RequestReceitaIngredienteDTO receitaIngredienteDto,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
-			var receitaIngrediente = _service.Atualizar(idReceita, idIngrediente,receitaIngredienteDto);
+			var receitaIngrediente = 
+				await _service.AtualizarAsync(idReceita, idIngrediente,receitaIngredienteDto, cancellationToken);
 			return TypedResults.Ok(receitaIngrediente);
 		}
 		catch (IdentificadorInvalidoException)
@@ -82,13 +90,14 @@ public class ReceitaIngredienteController : ControllerBase
 	}
 	
 	[HttpDelete("{idIngrediente}")]
-	public Results<NoContent, NotFound> DeleteReceitaIngrediente(
-	[FromRoute] int idReceita, 
-	[FromRoute] int idIngrediente)
+	public async Task<Results<NoContent, NotFound>> DeleteReceitaIngrediente(
+		[FromRoute] int idReceita, 
+		[FromRoute] int idIngrediente,
+		CancellationToken cancellationToken)
 	{
 	    try
 		{
-			_service.Excluir(idReceita, idIngrediente);
+			await _service.ExcluirAsync(idReceita, idIngrediente, cancellationToken);
 			return TypedResults.NoContent();
 		}
 		catch (IdentificadorInvalidoException)

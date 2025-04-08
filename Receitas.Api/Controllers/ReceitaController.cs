@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Receitas.Api.DTO;
@@ -18,17 +19,19 @@ public class ReceitaController : ControllerBase
 	}
 
 	[HttpGet("")]
-	public List<ResponseReceitaDTO> GetReceitas()
+	public async Task<List<ResponseReceitaDTO>> GetReceitas(CancellationToken cancellationToken)
 	{
-		return _service.BuscarTodas();
+		return await _service.BuscarTodasAsync(cancellationToken);
 	}
 
 	[HttpGet("{idReceita}")]
-	public Results<NotFound, Ok<ResponseReceitaDTO>> GetReceitaPorId([FromRoute] int idReceita)
+	public async Task<Results<NotFound, Ok<ResponseReceitaDTO>>> GetReceitaPorId(
+		[FromRoute] int idReceita,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
-			var receita = _service.BuscarPorId(idReceita);
+			var receita = await _service.BuscarPorIdAsync(idReceita, cancellationToken);
 			return TypedResults.Ok(receita);
 		}
 		catch (IdentificadorInvalidoException)
@@ -38,11 +41,13 @@ public class ReceitaController : ControllerBase
 	}
 
 	[HttpPost("")]
-	public Results<BadRequest, Ok<ResponseReceitaDTO>> PostReceita([FromBody] RequestReceitaDTO receitaDTO)
+	public async Task<Results<BadRequest, Ok<ResponseReceitaDTO>>> PostReceita(
+		[FromBody] RequestReceitaDTO receitaDTO,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
-			var receita = _service.Inserir(receitaDTO);
+			var receita = await _service.InserirAsync(receitaDTO, cancellationToken);
 			return TypedResults.Ok(receita);
 		}
 		catch (IdentificadorInvalidoException)
@@ -53,13 +58,14 @@ public class ReceitaController : ControllerBase
 	}
 	
 	[HttpPut("{idReceita}")]
-	public Results<BadRequest, Ok<ResponseReceitaDTO>> PutReceita(
-	[FromRoute] int idReceita,
-	[FromBody] RequestReceitaDTO receitaDTO)
+	public async Task<Results<BadRequest, Ok<ResponseReceitaDTO>>> PutReceita(
+		[FromRoute] int idReceita,
+		[FromBody] RequestReceitaDTO receitaDTO,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
-			var receita = _service.Atualizar(receitaDTO, idReceita);
+			var receita = await _service.AtualizarAsync(receitaDTO, idReceita, cancellationToken);
 			return TypedResults.Ok(receita);
 		}
 		catch (IdentificadorInvalidoException)
@@ -71,11 +77,13 @@ public class ReceitaController : ControllerBase
 	
 
 	[HttpDelete("{idReceita}")]
-	public Results<NoContent, NotFound> DeleteReceita([FromRoute] int idReceita)
+	public async Task<Results<NoContent, NotFound>> DeleteReceita(
+		[FromRoute] int idReceita,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
-			_service.Excluir(idReceita);
+			await _service.ExcluirAsync(idReceita, cancellationToken);
 			return TypedResults.NoContent();
 		}
 		catch (IdentificadorInvalidoException)
