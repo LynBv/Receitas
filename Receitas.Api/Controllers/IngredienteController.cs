@@ -28,6 +28,12 @@ public class IngredienteController : ControllerBase
 		return await _service.BuscarTodosAsync(cancellationToken);
 	}
 
+	/// <summary>
+	/// Busca um ingrediente cadastrado por ID.
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="cancellationToken"></param>
+	/// <returns>Retorna o ingrediente com ID correspondente</returns>
 	[HttpGet("{id}")]
 	public async Task<Results<NotFound, Ok<ResponseIngredienteDTO>>> GetIngrediente(
 		[FromRoute] int id,
