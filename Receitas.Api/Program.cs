@@ -37,7 +37,15 @@ internal class Program
 			option.UseSqlite(connString);
 		});
 		
-		builder.Services.AddSwaggerGen();
+		builder.Services.AddSwaggerGen(options =>
+		{
+    		options.SwaggerDoc("v1", new OpenApiInfo
+			{
+				Version = "v1",
+				Title = "Receitas API",
+				Description = "API para guardar suas receitas favoritas!."
+			});
+		});
 
 		var app = builder.Build();
 

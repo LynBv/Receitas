@@ -17,6 +17,11 @@ public class IngredienteController : ControllerBase
 		_service = service;
 	}
 
+	/// <summary>
+	/// Busca todos ingredientes cadastrados.
+	/// </summary>
+	/// <param name="cancellationToken"></param>
+	/// <returns>Retorna uma lista com todas os ingrediente cadastrados.</returns>
 	[HttpGet("")]
 	public async Task<List<ResponseIngredienteDTO>> GetIngredientesAsync(CancellationToken cancellationToken)
 	{
